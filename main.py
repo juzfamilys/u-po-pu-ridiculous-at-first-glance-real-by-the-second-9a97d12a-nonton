@@ -19,10 +19,25 @@ ENTRY = (
 )
 
 
+def validate(text):
+    """The gate the pitch must clear: one sentence, 1-200 chars, and it
+    must read as a real business, not just a joke — so it names a price
+    and a buyer."""
+    if not (1 <= len(text) <= 200):
+        raise SystemExit(f"entry must be 1-200 characters, got {len(text)}")
+    if "\n" in text or text != text.strip():
+        raise SystemExit("entry must be a single clean line")
+    if text.count(".") != 1 or not text.endswith("."):
+        raise SystemExit("entry must be exactly one sentence")
+    if "$" not in text:
+        raise SystemExit("entry must name its price")
+    if "pay" not in text.lower():
+        raise SystemExit("entry must name who pays")
+
+
 def main() -> None:
     text = ENTRY.strip()
-    if not text or len(text) > 200:
-        raise SystemExit(f"entry must be 1-200 characters, got {len(text)}")
+    validate(text)
     os.makedirs("/output", exist_ok=True)
     with open("/output/entry.txt", "w", encoding="utf-8") as fh:
         fh.write(text)
